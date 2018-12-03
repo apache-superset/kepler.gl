@@ -35,7 +35,7 @@ const StyledWrapper = styled.div`
 
 const StyledDescription = styled.div`
   margin-bottom: 24px;
-  
+
   .title {
     font-size: 24px;
     color: #3A414C;
@@ -57,7 +57,7 @@ const StyledList = styled.div`
 
 class CloudStorage extends Component {
   render() {
-    const {authTokens, isLoading, info, onExportToDropbox} = this.props;
+    const {authTokens, isLoading, info, onExport} = this.props;
 
     return (
       <StyledWrapper>
@@ -71,7 +71,8 @@ class CloudStorage extends Component {
               token={authTokens && authTokens[handler.name]}
               isLoading={isLoading}
               metadata={info && info.metadata}
-              onExportToDropbox={onExportToDropbox}
+              onExport={onExport}
+              onLogin={handler.handleAuth}
             />
           ))}
         </StyledList>

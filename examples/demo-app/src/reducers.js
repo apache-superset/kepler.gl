@@ -33,7 +33,7 @@ import {
   LOAD_REMOTE_RESOURCE_ERROR,
   SET_SAMPLE_LOADING_STATUS,
   SET_AUTH_TOKEN,
-  PROPAGATE_STORAGE_EVENT,
+  // PROPAGATE_STORAGE_EVENT,
   PUSHING_FILE
 } from './actions';
 
@@ -73,18 +73,17 @@ const initialAppState = {
 };
 
 // Read auth tokens from localStorage
-function readAuthTokens() {
-  return [Object.keys(AUTH_HANDLERS)].reduce((tokens, key) => {
-    const authHandler = AUTH_HANDLERS[key];
-    return {
-      ...tokens,
-      [authHandler.name]: authHandler.retrieveAuthToken ?
-        authHandler.retrieveAuthToken()
-        : null
-    };
-  }, {});
-
-}
+// function readAuthTokens() {
+//   return [Object.keys(AUTH_HANDLERS)].reduce((tokens, key) => {
+//     const authHandler = AUTH_HANDLERS[key];
+//     return {
+//       ...tokens,
+//       [authHandler.name]: authHandler.retrieveAuthToken ?
+//         authHandler.retrieveAuthToken()
+//         : null
+//     };
+//   }, {});
+// }
 
 // App reducer
 export const appReducer = handleActions({
@@ -119,10 +118,10 @@ const sharingInitialState = {
 
 // file upload reducer
 export const sharingReducer = handleActions({
-  [INIT]: (state) => ({
-    ...state,
-    authTokens: readAuthTokens()
-  }),
+  // [INIT]: (state) => ({
+  //   ...state,
+  //   authTokens: readAuthTokens()
+  // }),
   [LOAD_REMOTE_RESOURCE_ERROR]: (state, action) => ({
     ...state,
     error: action.error,
@@ -152,10 +151,10 @@ export const sharingReducer = handleActions({
       }
     };
   },
-  [PROPAGATE_STORAGE_EVENT]: state => ({
-    ...state,
-    authTokens: readAuthTokens()
-  }),
+  // [PROPAGATE_STORAGE_EVENT]: state => ({
+  //   ...state,
+  //   authTokens: readAuthTokens()
+  // }),
   [PUSHING_FILE]: (state, action) => ({
     ...state,
     isLoading: action.isLoading,

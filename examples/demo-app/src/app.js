@@ -32,8 +32,8 @@ import {
   initApp,
   exportFileToCloud,
   loadRemoteMap,
-  loadSampleConfigurations,
-  propagateStorageEvent
+  loadSampleConfigurations
+  // propagateStorageEvent
 } from './actions';
 
 const KeplerGl = require('kepler.gl/components').injectComponents([
@@ -93,15 +93,15 @@ class App extends Component {
       this.props.dispatch(loadRemoteMap({dataUrl: query.mapUrl}));
     }
 
-    // event listeners
-    window.addEventListener('resize', this._onResize);
-    if (localStorage) {
-      window.addEventListener('storage', event => {
-        if (event.storageArea === localStorage) {
-          this.props.dispatch(propagateStorageEvent())
-        }
-      }, false);
-    }
+    // // event listeners
+    // window.addEventListener('resize', this._onResize);
+    // if (localStorage) {
+    //   window.addEventListener('storage', event => {
+    //     if (event.storageArea === localStorage) {
+    //       this.props.dispatch(propagateStorageEvent())
+    //     }
+    //   }, false);
+    // }
 
     this._onResize();
   }

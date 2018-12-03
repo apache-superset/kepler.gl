@@ -29,26 +29,50 @@ const DOMAIN = 'www.dropbox.com';
 const CORS_FREE_DOMAIN = 'dl.dropboxusercontent.com';
 const dropbox = new Dropbox({clientId: DROPBOX_CLIEND_ID});
 
+/**
+ * Generate auth link url to open to be used to handle OAuth2
+ * @param {string} path
+ */
 function authLink(path = 'auth') {
   return dropbox.getAuthenticationUrl(
     `${window.location.origin}/${path}`,
-    JSON.stringify({handler: 'dropbox'})
+    btoa(JSON.stringify({ handler: 'dropbox', origin: window.location.origin}))
   )
 }
 
 /**
+ * This method will handle the oauth flow by performing the following steps:
+ * - Opening a new window
+ * - Subscribe to message channel
+ * - Receive the token when ready
+ * - Close the opened tab
+ */
+function handleAuth() {
+  const link = authLink();
+  const authWindow = window.open(link, '_blank');
+  const handleToken = e => {
+    // TODO: add security step to validate which domain the message is coming from
+    authWindow.close();
+    window.removeEventListener('message', handleToken);
+    dropbox.setAccessToken(e.data.token);
+  }
+  window.addEventListener('message', handleToken);
+}
+
+/**
  * This method will extract the atuch token from the third party service callback url. Default: Dropbox
+ * @param {Location} location the window location provided by react router
  * @returns {?string} the token extracted from the oauth 2 callback URL
  */
-function getAccessTokenFromUrl() {
-  if (!window.location.hash.length) {
+function getAccessTokenFromLocation(location) {
+  if (!(location && location.hash.length)) {
     return null;
   }
   // dropbox token usually start with # therefore we want to remore the '#'
   const query = window.location.hash.substring(1);
 
   const token = parseQueryString(query).access_token;
-  dropbox.setAccessToken(token);
+  // dropbox.setAccessToken(token);
   return token;
 }
 
@@ -57,34 +81,34 @@ function getAccessTokenFromUrl() {
  * and store it onto localstorage
  * @returns {?string} the stored token
  */
-function validateAndStoreAuth() {
-  const token = getAccessTokenFromUrl();
+// function validateAndStoreAuth() {
+//   const token = getAccessTokenFromUrl();
 
-  if (!token || !localStorage) {
-    return null;
-  }
+//   if (!token || !localStorage) {
+//     return null;
+//   }
 
-  localStorage.setItem(NAME, token);
+//   localStorage.setItem(NAME, token);
 
-  return token;
-}
+//   return token;
+// }
 
 /**
  * This method will retrieve the auth token
  * @returns {?string} The auth token
  */
-function retrieveAuthToken() {
-  if (!localStorage) {
-    return null
-  }
+// function retrieveAuthToken() {
+//   if (!localStorage) {
+//     return null
+//   }
 
-  // retrieve token mapped against this auth handler from local storage
-  const token = localStorage.getItem(NAME);
+//   // retrieve token mapped against this auth handler from local storage
+//   const token = localStorage.getItem(NAME);
 
-  dropbox.setAccessToken(token);
+//   dropbox.setAccessToken(token);
 
-  return token;
-}
+//   return token;
+// }
 
 /**
  *
@@ -101,7 +125,7 @@ function uploadFile(blob, name) {
 
 /**
  * It will set access to file to public
- * @param metadata
+ * @param {Object} metadata metadata response from uploading the file
  * @returns {Promise<DropboxTypes.sharing.FileLinkMetadataReference | DropboxTypes.sharing.FolderLinkMetadataReference | DropboxTypes.sharing.SharedLinkMetadataReference>}
  */
 function shareFile(metadata) {
@@ -121,7 +145,7 @@ function shareFile(metadata) {
  * ->
  * https://dl.dropboxusercontent.com/s/bxwwdb81z0jg7pb/keplergl_2018-11-01T23%3A22%3A43.940Z.json
  * @param metadata
- * @returns {{url: string}}
+ * @returns {DropboxTypes.sharing.FileLinkMetadataReference}
  */
 function overrideUrl(metadata) {
   const url = (metadata.url || '');
@@ -133,9 +157,8 @@ function overrideUrl(metadata) {
 
 export default {
   name: NAME,
-  authLink,
-  retrieveAuthToken,
+  getAccessTokenFromLocation,
+  handleAuth,
   shareFile,
-  uploadFile,
-  validateAndStoreAuth
+  uploadFile
 };

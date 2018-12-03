@@ -26,20 +26,28 @@ import {syncHistoryWithStore} from 'react-router-redux';
 import {render} from 'react-dom';
 import store from './store';
 import App from './app';
-
-import {validateAndStoreAuth} from './utils/auth-token';
+import {getAccessTokenFromLocation} from './utils/auth-token';
 
 const history = syncHistoryWithStore(browserHistory, store);
 
 const onEnterCallback = (nextState, transition, callback) => {
-  validateAndStoreAuth();
+  // validateAndStoreAuth();
+  // TODO: detect auth provider
+
+  // Check if the current tab was opened by our previous tab
+  if (window.opener) {
+    const { location } = nextState;
+    const token = getAccessTokenFromLocation(location);
+    window.opener.postMessage({token}, location.origin);
+  }
+
   callback();
 };
 
 const Root = () => (
   <Provider store={store}>
     <Router history={history}>
-      <Route path="/auth" component={App} onEnter={onEnterCallback}/>
+      <Route path="/auth" component={App} onEnter={onEnterCallback} />
       <Route path="/demo/(:id)" component={App} />
       <Route path="/map" component={App} />
       <Route path="/" component={App} />

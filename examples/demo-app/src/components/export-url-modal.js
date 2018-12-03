@@ -15,7 +15,7 @@ const ExportUrlModal = ({sharing, isOpen, onClose, onExport}) => (
         authTokens={sharing.authTokens}
         isLoading={sharing.isLoading}
         info={sharing.info}
-        onExportToDropbox={onExport}
+        onExport={onExport}
       />
     </ModalDialog>
   </ThemeProvider>

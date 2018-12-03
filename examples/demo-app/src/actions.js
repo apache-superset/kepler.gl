@@ -40,7 +40,7 @@ export const SET_SAMPLE_LOADING_STATUS = 'SET_SAMPLE_LOADING_STATUS';
 
 // Sharing
 export const SET_AUTH_TOKEN = 'SET_AUTH_TOKEN';
-export const PROPAGATE_STORAGE_EVENT = 'PROPAGATE_STORAGE_EVENT';
+// export const PROPAGATE_STORAGE_EVENT = 'PROPAGATE_STORAGE_EVENT';
 export const PUSHING_FILE = 'PUSHING_FILE';
 
 // ACTIONS
@@ -66,12 +66,12 @@ export function setAuthToken() {
   }
 }
 
-export function propagateStorageEvent(event) {
-  return {
-    type: PROPAGATE_STORAGE_EVENT,
-    event
-  };
-}
+// export function propagateStorageEvent(event) {
+//   return {
+//     type: PROPAGATE_STORAGE_EVENT,
+//     event
+//   };
+// }
 
 export function setPushingFile(isLoading, metadata) {
   return {

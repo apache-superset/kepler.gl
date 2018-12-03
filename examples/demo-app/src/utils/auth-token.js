@@ -54,13 +54,11 @@ export function uploadFile(fileBlob, name, handler = DropboxHandler) {
  * @returns {*}
  */
 export function shareFile(metadata, handler = DropboxHandler) {
-  if (!handler) {
-    return null;
-  }
+  return handler && handler.shareFile ?
+    handler.shareFile(metadata) : null;
+}
 
-  if (handler.shareFile) {
-    return handler.shareFile(metadata);
-  }
-
-  return Promise.reject('No auth handler');
+export function getAccessTokenFromLocation(location, handler = DropboxHandler) {
+  return handler && handler.getAccessTokenFromLocation ?
+    handler.getAccessTokenFromLocation(location) : null;
 }

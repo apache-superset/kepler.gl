@@ -52,7 +52,7 @@ const StyledTileMeta = styled.div`
   align-items: center;
   flex-direction: column;
   margin: 12px;
-  
+
   .title {
     margin-bottom: 12px;
   }
@@ -65,9 +65,9 @@ const TileButton = styled.button`
   padding: 0;
 `;
 
-const AuthHandlerTile = ({token, onExportToDropbox, isLoading, metadata}) => {
+const AuthHandlerTile = ({token, onExport, onLogin, isLoading, metadata}) => {
 
-  const logo = (<DropboxIcon height="64px" />);
+  const dropboxLogo = (<DropboxIcon height="64px" />);
   const showMeta = isLoading || (metadata && metadata.url);
   const sharingLink = metadata && metadata.url ?
     getMapSharingLink(metadata.url) : null;
@@ -77,13 +77,13 @@ const AuthHandlerTile = ({token, onExportToDropbox, isLoading, metadata}) => {
       <StyledTile>
         {token ?
           (
-            <TileButton onClick={onExportToDropbox}>
-              {logo}
+            <TileButton onClick={onExport}>
+              {dropboxLogo}
             </TileButton>
           ) : (
-            <a href={DropboxHandler.authLink()} target="_blank" rel="noopener noreferrer">
-              {logo}
-            </a>
+            <button onClick={onLogin}>
+              {dropboxLogo}
+            </button>
           )
         }
         <StyledLabel>Dropbox</StyledLabel>
