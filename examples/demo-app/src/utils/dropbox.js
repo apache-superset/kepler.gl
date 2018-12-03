@@ -22,8 +22,7 @@
 import {Dropbox} from 'dropbox';
 import {parseQueryString} from './url';
 
-// const DROPBOX_CLIEND_ID = process.env.DropboxClientId;
-const DROPBOX_CLIEND_ID = 'jx7ipiwmfen88a2';
+const DROPBOX_CLIEND_ID = process.env.DropboxClientId;
 const NAME = 'dropbox';
 const DOMAIN = 'www.dropbox.com';
 const CORS_FREE_DOMAIN = 'dl.dropboxusercontent.com';
