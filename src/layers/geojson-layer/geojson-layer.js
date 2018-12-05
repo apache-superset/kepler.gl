@@ -233,31 +233,33 @@ export default class GeoJsonLayer extends Layer {
    * @param {Function} dataAccessor - access kepler.gl layer data from deck.gl layer
    * @return {Object} attributeAccessors - deck.gl layer attribute accessors
    */
-  getAtributeAccessors(dataAccessor = defaultDataAccessor) {
+  getAttributeAccessors(dataAccessor = defaultDataAccessor) {
     const attributeAccessors = {};
+    
+    for (const key in this.visualChannels) {
+      if (this.visualChannels.hasOwnProperty(key)) {
+        const {condition, field, scale, domain, range, accessor, defaultValue, nullValue, channelScaleType} = this.visualChannels[key];
+        const disabled = condition && !condition(this.config);
 
-    for (let key in this.visualChannels) {
-      const {condition, field, scale, domain, range, accessor, defaultValue, nullValue, channelScaleType} = this.visualChannels[key];
-      const disabled = condition && !condition(this.config);
-
-      const scaleFunction = this.config[field] && !disabled
-        this.getVisChannelScale(
-          this.config[scale],
-          this.config[domain],
-          // for color, have to convert from hex to rgb
-          channelScaleType ===  CHANNEL_SCALES.color ?
-          this.config.visConfig[range].colors.map(hexToRgb) : this.config.visConfig[range]
-        );
-
-      attributeAccessors[accessor] = d => scaleFunction ?
-        this.getEncodedChannelValue(
-          scaleFunction,
-          dataAccessor(d),
-          this.config[field],
-          nullValue
-        )
-        : typeof defaultValue === 'function' ?
-        defaultValue(d, this.config) : defaultValue
+        const scaleFunction = this.config[field] && !disabled &&
+          this.getVisChannelScale(
+            this.config[scale],
+            this.config[domain],
+            // for color, have to convert from hex to rgb
+            channelScaleType ===  CHANNEL_SCALES.color ?
+            this.config.visConfig[range].colors.map(hexToRgb) : this.config.visConfig[range]
+          );
+        
+        attributeAccessors[accessor] = d => scaleFunction ?
+          this.getEncodedChannelValue(
+            scaleFunction,
+            dataAccessor(d),
+            this.config[field],
+            nullValue
+          )
+          : typeof defaultValue === 'function' ?
+          defaultValue(d, this.config) : defaultValue
+      }
     }
 
     return attributeAccessors;
@@ -287,7 +289,7 @@ export default class GeoJsonLayer extends Layer {
     // access keplergl layer data from deck.gl layer
     const dataAccessor = d => allData[d.properties.index];
 
-    const accessors = this.getAtributeAccessors(dataAccessor)
+    const accessors = this.getAttributeAccessors(dataAccessor)
 
     return {
       data: geojsonData,
@@ -362,27 +364,32 @@ export default class GeoJsonLayer extends Layer {
 
     const updateTriggers = {
       getElevation: {
+        heightDomain: this.config.heightDomain,
         heightField: this.config.heightField,
         heightScale: this.config.heightScale,
         heightRange: visConfig.heightRange
       },
       getFillColor: {
         color: this.config.color,
+        colorDomain: this.config.colorDomain,
         colorField: this.config.colorField,
         colorRange: visConfig.colorRange,
         colorScale: this.config.colorScale
       },
       getLineColor: {
         color: this.config.color,
+        colorDomain: this.config.colorDomain,
         colorField: this.config.colorField,
         colorRange: visConfig.colorRange,
         colorScale: this.config.colorScale
       },
       getLineWidth: {
+        sizeDomain: this.config.sizeDomain,
         sizeField: this.config.sizeField,
         sizeRange: visConfig.sizeRange
       },
       getRadius: {
+        radiusDomain: this.config.radiusDomain,
         radiusField: this.config.radiusField,
         radiusRange: visConfig.radiusRange
       }
